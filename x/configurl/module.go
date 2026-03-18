@@ -46,6 +46,10 @@ func RegisterDefaultProviders(c *ProviderContainer) *ProviderContainer {
 	registerDO53StreamDialer(&c.StreamDialers, "do53", c.StreamDialers.NewInstance, c.PacketDialers.NewInstance)
 	registerDOHStreamDialer(&c.StreamDialers, "doh", c.StreamDialers.NewInstance)
 
+	registerH2ConnectStreamDialer(&c.StreamDialers, "h2connect", c.StreamDialers.NewInstance)
+	registerH3ConnectStreamDialer(&c.StreamDialers, "h3connect")
+	registerHTTPConnectStreamDialer(&c.StreamDialers, "httpconnect", c.StreamDialers.NewInstance)
+
 	registerOverrideStreamDialer(&c.StreamDialers, "override", c.StreamDialers.NewInstance)
 	registerOverridePacketDialer(&c.PacketDialers, "override", c.PacketDialers.NewInstance)
 
@@ -125,6 +129,11 @@ func SanitizeConfig(configStr string) (string, error) {
 			}
 		case "socks5":
 			part, err = sanitizeSOCKS5URL(&config.URL)
+			if err != nil {
+				return "", err
+			}
+		case "h2connect", "h3connect", "httpconnect":
+			part, err = sanitizeConnectURL(config.URL)
 			if err != nil {
 				return "", err
 			}

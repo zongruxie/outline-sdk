@@ -57,6 +57,26 @@ SOCKS5 proxy (works with both stream and packet dialers, package [golang.getoutl
 
 USERINFO field is optional and only required if username and password authentication is used. It is in the format of username:password.
 
+HTTP CONNECT proxy (streams only, package [golang.getoutline.org/sdk/x/httpconnect])
+
+Three variants are available:
+
+  - httpconnect: HTTP/1.1, or HTTP/2 if negotiated via TLS ALPN. When H2 is negotiated, CONNECT streams are multiplexed over a single TCP connection.
+  - h2connect: Pure HTTP/2. Always multiplexed. Supports h2c (cleartext H2) via plain=true.
+  - h3connect: HTTP/3 over QUIC. Always multiplexed. Creates its own UDP socket.
+
+The sni parameter sets the TLS SNI. The certname parameter sets the name to validate against the server certificate.
+For h2connect, plain=true enables h2c (cleartext HTTP/2 without TLS).
+
+Proxy authentication is supported in two ways:
+
+  - URL userinfo (user:password@host) generates a Proxy-Authorization: Basic header.
+  - For other schemes such as Bearer the auth parameter sets the Proxy-Authorization header value directly.
+
+	httpconnect://[USER:PASS@][HOST]:[PORT][?sni=SNI][&certname=CERTNAME][&auth=TOKEN]
+	h2connect://[USER:PASS@][HOST]:[PORT][?sni=SNI][&certname=CERTNAME][&auth=TOKEN][&plain=true]
+	h3connect://[USER:PASS@][HOST]:[PORT][?sni=SNI][&certname=CERTNAME][&auth=TOKEN]
+
 # Transports
 
 TLS transport (currently streams only, package [golang.getoutline.org/sdk/transport/tls])
